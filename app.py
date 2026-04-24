@@ -1,3 +1,4 @@
+import os
 from flask import Flask, jsonify
 from flask_cors import CORS
 from flask_socketio import SocketIO
@@ -28,7 +29,7 @@ app.config['CORS_HEADERS'] = 'Content-Type'
 # Enable CORS
 CORS(app, origins=Config.CORS_ORIGINS, supports_credentials=True)
 
-# Initialize SocketIO for real-time updates (optional, for future websocket)
+# Initialize SocketIO for real-time updates
 socketio = SocketIO(app, cors_allowed_origins=Config.CORS_ORIGINS, async_mode='threading')
 
 # Register all blueprints/routes
@@ -61,7 +62,7 @@ def start_services():
     trading_engine.start()
     logger.info("Background services started")
 
-# Initialize on first request (or use before_first_request decorator)
+# Initialize on first request
 @app.before_request
 def initialize():
     if not hasattr(app, '_services_started'):
