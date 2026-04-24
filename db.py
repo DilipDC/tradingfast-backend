@@ -1,5 +1,4 @@
 from supabase import create_client
-from supabase._sync.client import SyncClient
 from config import Config
 import logging
 
@@ -17,19 +16,10 @@ class SupabaseDB:
 
     def _initialize(self):
         if not Config.SUPABASE_URL or not Config.SUPABASE_KEY:
-            raise ValueError("SUPABASE_URL and SUPABASE_KEY must be set in environment")
-
-        # Patch the SyncClient to accept the new publishable key format
-        original_init = SyncClient.__init__
-
-        def patched_init(self, supabase_url: str, supabase_key: str, **kwargs):
-            original_init(self, supabase_url, supabase_key, **kwargs)
-            self.supabase_key = supabase_key
-
-        SyncClient.__init__ = patched_init
+            raise ValueError("SUPABASE_URL and SUPABASE_KEY must be set")
 
         self._client = create_client(Config.SUPABASE_URL, Config.SUPABASE_KEY)
-        logger.info("Supabase client initialized with patched key validation")
+        logger.info("Supabase client initialized (v1.0.3)")
 
     def get_client(self):
         return self._client
