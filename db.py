@@ -1,4 +1,5 @@
-from supabase import create_client, Client
+from supabase import create_client
+from supabase._sync.client import SyncClient
 from config import Config
 import logging
 
@@ -6,7 +7,7 @@ logger = logging.getLogger(__name__)
 
 class SupabaseDB:
     _instance = None
-    _client: Client = None
+    _client = None
 
     def __new__(cls):
         if cls._instance is None:
@@ -17,14 +18,22 @@ class SupabaseDB:
     def _initialize(self):
         if not Config.SUPABASE_URL or not Config.SUPABASE_KEY:
             raise ValueError("SUPABASE_URL and SUPABASE_KEY must be set in environment")
-        
-        self._client = create_client(Config.SUPABASE_URL, Config.SUPABASE_KEY)
-        logger.info("Supabase client initialized")
 
-    def get_client(self) -> Client:
+        # Patch the SyncClient to accept the new publishable key format
+        original_init = SyncClient.__init__
+
+        def patched_init(self, supabase_url: str, supabase_key: str, **kwargs):
+            original_init(self, supabase_url, supabase_key, **kwargs)
+            self.supabase_key = supabase_key
+
+        SyncClient.__init__ = patched_init
+
+        self._client = create_client(Config.SUPABASE_URL, Config.SUPABASE_KEY)
+        logger.info("Supabase client initialized with patched key validation")
+
+    def get_client(self):
         return self._client
 
-    # Shortcut methods for common operations
     def fetch_one(self, table: str, filters: dict = None, columns: str = "*"):
         query = self._client.table(table).select(columns)
         if filters:
@@ -59,5 +68,4 @@ class SupabaseDB:
         result = query.execute()
         return result.data
 
-# Singleton instance
 db = SupabaseDB()
