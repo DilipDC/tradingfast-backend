@@ -1,22 +1,36 @@
+# 🌐 Flask Core
 flask==3.0.3
 flask-cors==4.0.1
 flask-socketio==5.3.6
 
+# 🔌 Socket / Real-time
 python-engineio==4.9.0
 python-socketio==5.11.3
+eventlet==0.35.2
 
+# 🧠 Database (Supabase)
 supabase==1.0.3
+postgrest==0.10.8
+gotrue==1.0.4
+storage3==0.5.4
+
+# 🐘 PostgreSQL driver
 psycopg2-binary==2.9.9
 
+# 🔐 Authentication & Security
 bcrypt==4.1.3
 PyJWT==2.8.0
 
+# ⚙️ Environment config
 python-dotenv==1.0.1
 
+# 🧠 Data validation
 pydantic==2.7.4
 pydantic-core==2.18.4
+email-validator==2.1.1
 
+# 🌍 HTTP Requests
 requests==2.32.3
 
+# 🚀 Production server
 gunicorn==22.0.0
-eventlet==0.35.2
